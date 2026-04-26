@@ -1,0 +1,32 @@
+---
+const { date, stats } = Astro.props;
+
+const formatted = new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', {
+  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+});
+---
+<a href={`/digest/${date}`} class="card">
+  <div class="date">{formatted}</div>
+  <div class="stats">
+    {stats.xBuilders} builders
+    {stats.podcastEpisodes > 0 && ` · ${stats.podcastEpisodes} podcast`}
+    {stats.blogPosts > 0 && ` · ${stats.blogPosts} blog`}
+  </div>
+</a>
+
+<style>
+  .card {
+    display: block;
+    padding: 1rem 1.25rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    background: white;
+    transition: border-color 0.15s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .card:hover { border-color: #0070f3; text-decoration: none; }
+  .date { font-weight: 600; font-size: 1rem; }
+  .stats { color: #666; font-size: 0.875rem; margin-top: 0.25rem; }
+</style>

@@ -1,0 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DigestCard from '../components/DigestCard.astro';
+
+const snapshots = await Astro.glob('../../../history/*.json');
+const digests = snapshots
+  .map(s => ({ date: s.date, stats: s.stats }))
+  .sort((a, b) => b.date.localeCompare(a.date));
+---
+<Layout>
+  <h2 style="margin-top:0">Archive</h2>
+  {digests.length === 0 && <p>No digests yet.</p>}
+  {digests.map(d => <DigestCard date={d.date} stats={d.stats} />)}
+</Layout>
