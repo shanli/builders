@@ -9,7 +9,11 @@ const BASE_URL = 'https://raw.githubusercontent.com/zarazhangrui/follow-builders
 async function fetchJSON(path) {
   const res = await fetch(`${BASE_URL}/${path}`);
   if (!res.ok) throw new Error(`Failed to fetch ${path}: ${res.status}`);
-  return res.json();
+  try {
+    return await res.json();
+  } catch (e) {
+    throw new Error(`Invalid JSON from ${path}: ${e.message}`);
+  }
 }
 
 async function main() {
