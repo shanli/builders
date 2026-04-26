@@ -1,0 +1,18 @@
+---
+const { podcast } = Astro.props;
+const pubDate = podcast.publishedAt
+  ? new Date(podcast.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  : null;
+---
+<div class="podcast">
+  <div class="podcast-source">{podcast.name}</div>
+  <a class="podcast-title" href={podcast.url} target="_blank">{podcast.title} ↗</a>
+  {pubDate && <div class="podcast-date">{pubDate}</div>}
+</div>
+
+<style>
+  .podcast { padding: 1rem; background: #f0f7ff; border-radius: 6px; margin-bottom: 1rem; }
+  .podcast-source { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #0070f3; font-weight: 600; margin-bottom: 0.25rem; }
+  .podcast-title { font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.25rem; }
+  .podcast-date { color: #666; font-size: 0.8rem; }
+</style>

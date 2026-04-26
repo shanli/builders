@@ -1,0 +1,77 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BuilderSection from '../../components/BuilderSection.astro';
+import PodcastSection from '../../components/PodcastSection.astro';
+import BlogSection from '../../components/BlogSection.astro';
+
+export async function getStaticPaths() {
+  const snapshots = await Astro.glob('../../../../history/*.json');
+  const sorted = snapshots.sort((a, b) => a.date.localeCompare(b.date));
+  return sorted.map((snapshot, i) => ({
+    params: { date: snapshot.date },
+    props: {
+      snapshot,
+      prevDate: i > 0 ? sorted[i - 1].date : null,
+      nextDate: i < sorted.length - 1 ? sorted[i + 1].date : null,
+    },
+  }));
+}
+
+const { snapshot, prevDate, nextDate } = Astro.props;
+const { date, x, podcasts, blogs, stats } = snapshot;
+
+const formatted = new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', {
+  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+});
+---
+<Layout title={`AI Builders Digest — ${date}`}>
+  <div class="digest-header">
+    <h2>{formatted}</h2>
+    <p class="summary">
+      {stats.xBuilders} builders with new posts
+      {stats.podcastEpisodes > 0 && ` · ${stats.podcastEpisodes} podcast episode`}
+      {stats.blogPosts > 0 && ` · ${stats.blogPosts} blog post`}
+    </p>
+  </div>
+
+  {x.length > 0 && (
+    <section>
+      <h3 class="section-title">X / Twitter</h3>
+      {x.map(builder => <BuilderSection builder={builder} />)}
+    </section>
+  )}
+
+  {blogs.length > 0 && (
+    <section>
+      <h3 class="section-title">Official Blogs</h3>
+      {blogs.map(post => <BlogSection post={post} />)}
+    </section>
+  )}
+
+  {podcasts.length > 0 && (
+    <section>
+      <h3 class="section-title">Podcasts</h3>
+      {podcasts.map(podcast => <PodcastSection podcast={podcast} />)}
+    </section>
+  )}
+
+  <nav class="pagination">
+    {prevDate
+      ? <a href={`/digest/${prevDate}`}>← {prevDate}</a>
+      : <span></span>
+    }
+    <a href="/">All digests</a>
+    {nextDate
+      ? <a href={`/digest/${nextDate}`}>{nextDate} →</a>
+      : <span></span>
+    }
+  </nav>
+</Layout>
+
+<style>
+  .digest-header { margin-bottom: 2rem; }
+  .digest-header h2 { margin: 0 0 0.25rem; }
+  .summary { color: #666; margin: 0; font-size: 0.9rem; }
+  .section-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #888; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin: 2rem 0 1.25rem; }
+  .pagination { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #eee; font-size: 0.875rem; }
+</style>

@@ -1,0 +1,15 @@
+---
+const { post } = Astro.props;
+---
+<div class="blog">
+  <div class="blog-source">{post.name}</div>
+  <a class="blog-title" href={post.url} target="_blank">{post.title} ↗</a>
+  {post.description && <p class="blog-desc">{post.description}</p>}
+</div>
+
+<style>
+  .blog { padding: 1rem; background: #f5fff5; border-radius: 6px; margin-bottom: 1rem; }
+  .blog-source { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #059669; font-weight: 600; margin-bottom: 0.25rem; }
+  .blog-title { font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.25rem; }
+  .blog-desc { color: #555; font-size: 0.875rem; margin: 0.25rem 0 0; }
+</style>

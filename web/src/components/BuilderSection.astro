@@ -1,0 +1,35 @@
+---
+const { builder } = Astro.props;
+---
+<div class="builder">
+  <div class="builder-header">
+    <span class="name">{builder.name}</span>
+    <a class="handle" href={`https://x.com/${builder.handle}`} target="_blank">@{builder.handle}</a>
+  </div>
+  {builder.bio && <p class="bio">{builder.bio.split('\n')[0]}</p>}
+  <ul class="tweets">
+    {builder.tweets.map(tweet => (
+      <li class="tweet">
+        <p class="tweet-text">{tweet.text}</p>
+        <div class="tweet-meta">
+          <a href={tweet.url} target="_blank">View on X ↗</a>
+          <span class="engagement">♥ {tweet.likes} &nbsp; ↺ {tweet.retweets}</span>
+        </div>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .builder { margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #eee; }
+  .builder:last-child { border-bottom: none; }
+  .builder-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem; }
+  .name { font-weight: 700; font-size: 1rem; }
+  .handle { color: #666; font-size: 0.875rem; }
+  .bio { color: #555; font-size: 0.875rem; margin: 0.25rem 0 0.75rem; }
+  .tweets { list-style: none; padding: 0; margin: 0; }
+  .tweet { background: #f5f5f5; border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.5rem; }
+  .tweet-text { margin: 0 0 0.5rem; white-space: pre-wrap; font-size: 0.9rem; }
+  .tweet-meta { display: flex; justify-content: space-between; font-size: 0.8rem; }
+  .engagement { color: #888; }
+</style>
