@@ -1,0 +1,32 @@
+name: Fetch and Snapshot Daily Feeds
+
+on:
+  schedule:
+    # Run daily at 6:30am UTC (30 min after follow-builders CI updates feeds)
+    - cron: '30 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Create today's snapshot
+        run: node scripts/create-snapshot.js
+
+      - name: Commit and push snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          DATE=$(node -e "console.log(new Date().toISOString().split('T')[0])")
+          git add history/${DATE}.json
+          git diff --cached --quiet || git commit -m "chore: add digest ${DATE} [skip ci]"
+          git push
