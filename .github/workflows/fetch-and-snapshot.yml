@@ -2,8 +2,8 @@ name: Fetch and Snapshot Daily Feeds
 
 on:
   schedule:
-    # Run daily at 6:30am UTC (30 min after follow-builders CI updates feeds)
-    - cron: '30 6 * * *'
+    # Run daily at 1:00am UTC (9:00am Shanghai time, 30 min after follow-builders CI updates feeds)
+    - cron: '0 1 * * *'
   workflow_dispatch:
 
 jobs:
