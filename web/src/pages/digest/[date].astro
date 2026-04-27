@@ -23,6 +23,13 @@ const { date, x, podcasts, blogs, stats, digest } = snapshot;
 const formatted = new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', {
   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
 });
+
+function linkify(text: string): string {
+  return text.replace(
+    /(https?:\/\/[^\s]+)/g,
+    '<a href="$1" target="_blank" rel="noopener">$1</a>'
+  );
+}
 ---
 <Layout title={`AI Builders Digest — ${date}`}>
   <div class="digest-header">
@@ -41,7 +48,7 @@ const formatted = new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', {
         line.startsWith('━') ? <hr /> :
         line.startsWith('## ') || line.startsWith('# ') ? <h3 class="section-title">{line.replace(/^#+\s*/, '')}</h3> :
         line.startsWith('---') ? null :
-        <p>{line}</p>
+        <p set:html={linkify(line)} />
       )}
     </div>
   ) : (
