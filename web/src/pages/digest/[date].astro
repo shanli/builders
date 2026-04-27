@@ -18,7 +18,7 @@ export async function getStaticPaths() {
 }
 
 const { snapshot, prevDate, nextDate } = Astro.props;
-const { date, x, podcasts, blogs, stats } = snapshot;
+const { date, x, podcasts, blogs, stats, digest } = snapshot;
 
 const formatted = new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', {
   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -34,25 +34,39 @@ const formatted = new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', {
     </p>
   </div>
 
-  {x.length > 0 && (
-    <section>
-      <h3 class="section-title">X / Twitter</h3>
-      {x.map(builder => <BuilderSection builder={builder} />)}
-    </section>
-  )}
+  {digest ? (
+    <div class="digest-text">
+      {digest.split('\n').map(line =>
+        line.trim() === '' ? <br /> :
+        line.startsWith('━') ? <hr /> :
+        line.startsWith('## ') || line.startsWith('# ') ? <h3 class="section-title">{line.replace(/^#+\s*/, '')}</h3> :
+        line.startsWith('---') ? null :
+        <p>{line}</p>
+      )}
+    </div>
+  ) : (
+    <>
+      {x.length > 0 && (
+        <section>
+          <h3 class="section-title">X / Twitter</h3>
+          {x.map(builder => <BuilderSection builder={builder} />)}
+        </section>
+      )}
 
-  {blogs.length > 0 && (
-    <section>
-      <h3 class="section-title">Official Blogs</h3>
-      {blogs.map(post => <BlogSection post={post} />)}
-    </section>
-  )}
+      {blogs.length > 0 && (
+        <section>
+          <h3 class="section-title">Official Blogs</h3>
+          {blogs.map(post => <BlogSection post={post} />)}
+        </section>
+      )}
 
-  {podcasts.length > 0 && (
-    <section>
-      <h3 class="section-title">Podcasts</h3>
-      {podcasts.map(podcast => <PodcastSection podcast={podcast} />)}
-    </section>
+      {podcasts.length > 0 && (
+        <section>
+          <h3 class="section-title">Podcasts</h3>
+          {podcasts.map(podcast => <PodcastSection podcast={podcast} />)}
+        </section>
+      )}
+    </>
   )}
 
   <nav class="pagination">
@@ -74,4 +88,7 @@ const formatted = new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', {
   .summary { color: #666; margin: 0; font-size: 0.9rem; }
   .section-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #888; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin: 2rem 0 1.25rem; }
   .pagination { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #eee; font-size: 0.875rem; }
+  .digest-text p { margin: 0.4rem 0; line-height: 1.7; }
+  .digest-text hr { border: none; border-top: 1px solid #eee; margin: 1.5rem 0; }
+  .digest-text a { color: #0070f3; word-break: break-all; font-size: 0.85rem; }
 </style>
