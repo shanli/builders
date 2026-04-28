@@ -24,52 +24,64 @@ const formatted = new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', {
   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
 });
 
-function linkify(text: string): string {
-  return text.replace(
-    /(https?:\/\/[^\s]+)/g,
-    '<a href="$1" target="_blank" rel="noopener">$1</a>'
-  );
+function processLine(text: string): string {
+  return text
+    // bold
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // links
+    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+}
+
+function getSectionMeta(line: string): { label: string; cls: string } | null {
+  if (/x\s*\/\s*twitter/i.test(line)) return { label: '📱 X / Twitter', cls: 'x' };
+  if (/podcast/i.test(line))          return { label: '🎙 Podcasts', cls: 'pod' };
+  if (/blog/i.test(line))             return { label: '📝 Official Blogs', cls: 'blog' };
+  return null;
 }
 ---
 <Layout title={`AI Builders Digest — ${date}`}>
   <div class="digest-header">
-    <h2>{formatted}</h2>
-    <p class="summary">
-      {stats.xBuilders} builders with new posts
-      {stats.podcastEpisodes > 0 && ` · ${stats.podcastEpisodes} podcast episode`}
-      {stats.blogPosts > 0 && ` · ${stats.blogPosts} blog post`}
-    </p>
+    <div class="meta-row">
+      <span class="date-label">{formatted}</span>
+    </div>
+    <div class="stat-badges">
+      <span class="badge x">{stats.xBuilders} builders</span>
+      {stats.podcastEpisodes > 0 && <span class="badge pod">{stats.podcastEpisodes} podcast</span>}
+      {stats.blogPosts > 0 && <span class="badge blog">{stats.blogPosts} blog</span>}
+    </div>
   </div>
 
   {digest ? (
     <div class="digest-text">
-      {digest.split('\n').map(line =>
-        line.trim() === '' ? <br /> :
-        line.startsWith('━') ? <hr /> :
-        line.startsWith('## ') || line.startsWith('# ') ? <h3 class="section-title">{line.replace(/^#+\s*/, '')}</h3> :
-        line.startsWith('---') ? null :
-        <p set:html={linkify(line)} />
-      )}
+      {digest.split('\n').map(line => {
+        if (line.trim() === '') return <div class="spacer" />;
+        if (line.startsWith('━')) return <div class="section-divider" />;
+        if (line.startsWith('---')) return <hr class="bilingual-divider" />;
+        if (line.startsWith('## ') || line.startsWith('# ')) {
+          const meta = getSectionMeta(line);
+          if (meta) return <div class={`section-header ${meta.cls}`}>{meta.label}</div>;
+          return <div class="section-header">{line.replace(/^#+\s*/, '')}</div>;
+        }
+        return <p set:html={processLine(line)} />;
+      })}
     </div>
   ) : (
     <>
       {x.length > 0 && (
         <section>
-          <h3 class="section-title">X / Twitter</h3>
+          <div class="section-header x">📱 X / Twitter</div>
           {x.map(builder => <BuilderSection builder={builder} />)}
         </section>
       )}
-
       {blogs.length > 0 && (
         <section>
-          <h3 class="section-title">Official Blogs</h3>
+          <div class="section-header blog">📝 Official Blogs</div>
           {blogs.map(post => <BlogSection post={post} />)}
         </section>
       )}
-
       {podcasts.length > 0 && (
         <section>
-          <h3 class="section-title">Podcasts</h3>
+          <div class="section-header pod">🎙 Podcasts</div>
           {podcasts.map(podcast => <PodcastSection podcast={podcast} />)}
         </section>
       )}
@@ -90,12 +102,79 @@ function linkify(text: string): string {
 </Layout>
 
 <style>
+  /* Header */
   .digest-header { margin-bottom: 2rem; }
-  .digest-header h2 { margin: 0 0 0.25rem; }
-  .summary { color: #666; margin: 0; font-size: 0.9rem; }
-  .section-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #888; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin: 2rem 0 1.25rem; }
-  .pagination { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #eee; font-size: 0.875rem; }
-  .digest-text p { margin: 0.4rem 0; line-height: 1.7; }
-  .digest-text hr { border: none; border-top: 1px solid #eee; margin: 1.5rem 0; }
-  .digest-text a { color: #0070f3; word-break: break-all; font-size: 0.85rem; }
+  .meta-row { margin-bottom: 0.625rem; }
+  .date-label {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #111827;
+  }
+  .stat-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    letter-spacing: 0.02em;
+  }
+  .badge.x    { background: #EEF2FF; color: #6366F1; }
+  .badge.pod  { background: #F5F3FF; color: #7C3AED; }
+  .badge.blog { background: #ECFDF5; color: #059669; }
+
+  /* Section headers */
+  .section-header {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    display: inline-block;
+    margin: 1.75rem 0 1.25rem;
+  }
+  .section-header.x    { background: #EEF2FF; color: #6366F1; }
+  .section-header.pod  { background: #F5F3FF; color: #7C3AED; }
+  .section-header.blog { background: #ECFDF5; color: #059669; }
+
+  /* Digest text */
+  .digest-text p {
+    margin: 0.2rem 0;
+    line-height: 1.8;
+    font-size: 0.95rem;
+    color: #1F2937;
+  }
+  .digest-text p strong { color: #111827; font-weight: 700; }
+  .digest-text a {
+    color: #6366F1;
+    font-size: 0.82rem;
+    word-break: break-all;
+    opacity: 0.8;
+  }
+  .digest-text a:hover { opacity: 1; }
+
+  .section-divider {
+    border: none;
+    border-top: 1px solid #E5E7EB;
+    margin: 2rem 0 0.5rem;
+  }
+  .bilingual-divider {
+    border: none;
+    border-top: 1px dashed #E5E7EB;
+    margin: 0.75rem 0;
+  }
+  .spacer { height: 0.4rem; }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #E5E7EB;
+    font-size: 0.85rem;
+    color: #6B7280;
+  }
+  .pagination a { color: #6366F1; font-weight: 500; }
 </style>
