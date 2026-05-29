@@ -1,0 +1,52 @@
+{
+  "date": "2026-05-29",
+  "x": [],
+  "podcasts": [
+    {
+      "name": "AI & I by Every",
+      "title": "We Automated Everything With AI and Tripled Our Headcount",
+      "guid": "04fabe7b-e886-49d4-a663-879cef0a049a",
+      "url": "https://www.youtube.com/watch?v=dCmOTURRf1Y",
+      "publishedAt": "2026-05-27T16:28:59.000Z"
+    }
+  ],
+  "blogs": [
+    {
+      "name": "Anthropic Engineering",
+      "title": "An update on recent Claude Code quality reports",
+      "url": "https://www.anthropic.com/engineering/april-23-postmortem",
+      "publishedAt": null,
+      "author": "",
+      "description": ""
+    },
+    {
+      "name": "Anthropic Engineering",
+      "title": "Scaling Managed Agents: Decoupling the brain from the hands",
+      "url": "https://www.anthropic.com/engineering/managed-agents",
+      "publishedAt": null,
+      "author": "",
+      "description": ""
+    },
+    {
+      "name": "Claude Blog",
+      "title": "New in Claude Managed Agents: self-hosted sandboxes and MCP tunnels",
+      "url": "https://claude.com/blog/claude-managed-agents-updates",
+      "publishedAt": "May 19, 2026",
+      "author": "",
+      "description": ""
+    },
+    {
+      "name": "Claude Blog",
+      "title": "New connectors in Claude for everyday life",
+      "url": "https://claude.com/blog/connectors-for-everyday-life",
+      "publishedAt": "Apr 23, 2026",
+      "author": "",
+      "description": ""
+    }
+  ],
+  "stats": {
+    "xBuilders": 0,
+    "podcastEpisodes": 1,
+    "blogPosts": 4
+  }
+}
